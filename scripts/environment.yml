@@ -1,0 +1,7 @@
+name: iddcat
+channels:
+  - conda-forge
+dependencies:
+  - sqlalchemy
+  - psycopg2
+prefix: /home/ldm/.conda/envs/iddcat
