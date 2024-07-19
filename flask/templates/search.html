@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>IDD Catalog Search</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script src="https://kit.fontawesome.com/298c9c0ad0.js" crossorigin="anonymous"></script>
+  
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">  
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
+	<style type="text/css">
+	    html, body {
+	      padding: 5px;
+	    }
+	    .table-morecondensed>tbody>tr>td, .table-morecondensed>tbody>tr>th, .table-morecondensed>tfoot>tr>td, .table-morecondensed>tfoot>tr>th, .table-morecondensed>thead>tr>td, .table-morecondensed>thead>tr>th {
+	      padding-top: 3px;
+	      padding-bottom: 3px;
+	    }
+	    th {
+	        text-align: center;
+	    }
+    /*  tr {
+          text-align: center;
+      }*/
+      #notice {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        background-color: #ff81004a;
+        border: 1px solid #ff8100;
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+	</style>
+
+	<script type="text/javascript">
+    var results_tbl;
+
+    function run_search() {
+      let url = `https://example.com/flask/json/search?feedtype=${frm_feedtype.value}&phrase=${frm_phrase.value}&start=${frm_start.value}&end=${frm_end.value}`;
+      console.log(url);
+      results_tbl.ajax.url(url).load();
+    }
+
+    $(document).ready(function(e) {
+      var frm_feedtype = document.getElementById("frm_feedtype");
+      var frm_phrase = document.getElementById("frm_phrase");
+      var frm_start = document.getElementById("frm_start");
+      var frm_end = document.getElementById("frm_end");
+
+      results_tbl = $('#results_tbl').DataTable({
+          "processing": true,
+          "language": {
+            processing: '<i class="fas fa-sync fa-spin"></i><span class="sr-only">Loading...</span> '
+          },
+          ajax: {url: 'https://example.com/flask/json/null', dataSrc:''},
+          columns: [
+            { "data": "product", "width": "65%" },
+            { "data": "feedtype", "width": "10%" },
+            { "data": "datasize", "width": "10%" },
+            { "data": "insertion_time", "width": "15%" },
+          ],
+          order: [[3, 'desc']],
+          "pageLength": 25,
+      });
+    });
+	</script>
+
+</head>
+<body>
+<center>
+<div id="content_div">
+  <h3>IDD Catalog - Custom Search: idd.unidata.ucar.edu</h3>
+  <div id="search_div">
+    Search String: <input type="text" id="frm_phrase">
+    Feedtype: <input type="text" id="frm_feedtype" value="NGRID">
+    Start Date/Time: <input type="text" id="frm_start" value="202310010000" placeholder="YYYYMMDDhhmm">
+    End Date/Time: <input type="text" id="frm_end" value="" placeholder="YYYYMMDDhhmm"><br><br>
+    <button type="button" onclick="run_search()">Search</button>
+  </div>
+  <table id="results_tbl" class="table table-morecondensed" style="width:100%">
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Feed Type</th>
+        <th>Size (bytes)</th>
+        <th>Insertion Time</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+
+</center>
+</body>
+</html>

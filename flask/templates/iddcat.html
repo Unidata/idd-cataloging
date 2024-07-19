@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>IDD Catalog Real-Time</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+  <script src="https://kit.fontawesome.com/298c9c0ad0.js" crossorigin="anonymous"></script>
+  
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">  
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+
+	<style type="text/css">
+	    html, body {
+	      padding: 5px;
+	    }
+	    .table-morecondensed>tbody>tr>td, .table-morecondensed>tbody>tr>th, .table-morecondensed>tfoot>tr>td, .table-morecondensed>tfoot>tr>th, .table-morecondensed>thead>tr>td, .table-morecondensed>thead>tr>th {
+	      padding-top: 3px;
+	      padding-bottom: 3px;
+	    }
+	    th {
+	        text-align: center;
+	    }
+    /*  tr {
+          text-align: center;
+      }*/
+      #notice {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        background-color: #ff81004a;
+        border: 1px solid #ff8100;
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+      #countdown {
+        position: absolute;
+        top: 0px;
+        right: 10px;
+      }
+	</style>
+
+	<script type="text/javascript">
+    var active_warnings_table;
+    var reload_timer = 1;  // seconds
+    var time_left = reload_timer;
+
+    $(document).ready(function(e) {
+      $('#time').html(reload_timer / 60 + ':00');
+
+      active_warnings_table = $('#active_warnings_tbl').DataTable( {
+          ajax: {url: 'http://example.com/flask/json/basic', dataSrc:''},
+          columns: [
+            { "data": "product", "width": "65%" },
+            { "data": "feedtype", "width": "10%" },
+            { "data": "datasize", "width": "10%" },
+            { "data": "insertion_time", "width": "15%" },
+          ],
+          order: [[3, 'desc']],
+          "pageLength": 25,
+      });
+      //console.log(active_warnings_table);
+
+      // // Event Handlers:
+      // $(document).on('click', '#active_warnings_tbl tbody tr', function (e) {
+      //   var data = active_warnings_table.row( this ).data();
+      //   var urls = data.files.split(" ");
+      //   var last_url = urls[urls.length-2].replace('href="', '').replace('"', '');
+      //   if (e.target.nodeName != 'A') {window.open(last_url);}
+      // });
+
+      // // Error Handlers:
+      // $.fn.dataTable.ext.errMode = 'none';
+      // $('#active_warnings_tbl').on( 'error.dt', function ( e, settings, techNote, message ) {
+      //   var currentdate = new Date();
+      //   var err_time = currentdate.getHours() + ":" + currentdate.getMinutes();
+      //   console.log("Warnings could not be refreshed: " + err_time);
+      // }).DataTable();
+
+    });
+
+    // Countdown timer and data reload:
+    setInterval(function() {
+
+      if (time_left <= 0) {
+        active_warnings_table.ajax.reload();
+        time_left = reload_timer;
+      } else {
+        time_left -= 1;
+      }
+
+      var minutes = Math.floor(time_left % (60 * 60) / 60);
+      var seconds = Math.floor(time_left % 60).toString();
+      seconds = seconds.length < 2 ? '0' + seconds : seconds;
+
+      var countdown_div = document.getElementById("time");
+      countdown_div.innerHTML = minutes + ":" + seconds;
+
+      if (time_left < 10) {
+      	countdown_div.style.color = '#ff9900';
+      } else {
+      	countdown_div.style.color = '#000000';
+      }
+
+    }, 1000);
+	</script>
+
+</head>
+<body>
+<!-- <div id="notice">  In Development - Not to be used operationally! </div> -->
+<div id="countdown">This information will reload in <span id="time"></span></div>
+<center>
+<div id="active_warnings_div">
+  <h3>IDD Catalog - Real-Time: idd.unidata.ucar.edu</h3>
+  <table id="active_warnings_tbl" class="table table-morecondensed" style="width:100%">
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Feed Type</th>
+        <th>Size (bytes)</th>
+        <th>Insertion Time</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+</div>
+
+</center>
+</body>
+</html>
